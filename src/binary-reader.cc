@@ -930,11 +930,16 @@ static void read_names_section(Context* ctx, uint32_t section_size) {
         uint32_t num_names;
         in_u32_leb128(ctx, &num_names, "name count");
         CALLBACK(OnFunctionNamesCount, num_names);
+        uint32_t last_function_index = 0;
         for (uint32_t j = 0; j < num_names; ++j) {
           uint32_t function_index;
           StringSlice function_name;
 
           in_u32_leb128(ctx, &function_index, "function index");
+          RAISE_ERROR_UNLESS(
+              !last_function_index || function_index > last_function_index,
+              "function index out of order: %u", function_index);
+          last_function_index = function_index;
           RAISE_ERROR_UNLESS(function_index < num_total_funcs(ctx),
                              "invalid function index: %u", function_index);
           in_str(ctx, &function_name, "function name");
@@ -954,11 +959,16 @@ static void read_names_section(Context* ctx, uint32_t section_size) {
           uint32_t num_locals;
           in_u32_leb128(ctx, &num_locals, "local count");
           CALLBACK(OnLocalNameLocalCount, function_index, num_locals);
+          uint32_t last_local_index = 0;
           for (uint32_t k = 0; k < num_locals; ++k) {
             uint32_t local_index;
             StringSlice local_name;
 
             in_u32_leb128(ctx, &local_index, "named index");
+            RAISE_ERROR_UNLESS(
+                !last_local_index || local_index > last_local_index,
+                "local index out of order: %u", local_index);
+            last_local_index = local_index;
             in_str(ctx, &local_name, "name");
             CALLBACK(OnLocalName, function_index, local_index, local_name);
           }
