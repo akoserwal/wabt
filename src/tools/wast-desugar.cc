@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-#include <assert.h>
-#include <stdarg.h>
-#include <stdint.h>
-#include <stdio.h>
-#include <stdlib.h>
+#include <cassert>
+#include <cstdarg>
+#include <cstdint>
+#include <cstdio>
+#include <cstdlib>
 
 #include "apply-names.h"
 #include "common.h"
@@ -124,7 +124,7 @@ struct Context {
   Result result;
 };
 
-int main(int argc, char** argv) {
+int ProgramMain(int argc, char** argv) {
   init_stdio();
   parse_options(argc, argv);
 
@@ -156,4 +156,10 @@ int main(int argc, char** argv) {
   destroy_wast_lexer(lexer);
   delete script;
   return result != Result::Ok;
+}
+
+int main(int argc, char** argv) {
+  WABT_TRY
+  return ProgramMain(argc, argv);
+  WABT_CATCH_BAD_ALLOC_AND_EXIT
 }

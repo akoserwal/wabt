@@ -17,13 +17,11 @@
 #include "binary-writer.h"
 #include "config.h"
 
-#include <assert.h>
-#include <math.h>
-#include <memory.h>
-#include <stdarg.h>
-#include <stdint.h>
-#include <stdio.h>
-
+#include <cassert>
+#include <cmath>
+#include <cstdarg>
+#include <cstdint>
+#include <cstdio>
 #include <vector>
 
 #include "binary.h"
@@ -640,9 +638,9 @@ void BinaryWriter::WriteRelocSection(const RelocSection* reloc_section) {
     write_u32_leb128(&stream_, reloc.offset, "reloc offset");
     write_u32_leb128(&stream_, reloc.index, "reloc index");
     switch (reloc.type) {
-      case RelocType::MemoryAddressLEB:
-      case RelocType::MemoryAddressSLEB:
-      case RelocType::MemoryAddressI32:
+      case RelocType::GlobalAddressLEB:
+      case RelocType::GlobalAddressSLEB:
+      case RelocType::GlobalAddressI32:
         write_u32_leb128(&stream_, reloc.addend, "reloc addend");
         break;
       default:

@@ -14,13 +14,12 @@
  * limitations under the License.
  */
 
-#include <assert.h>
-#include <errno.h>
-#include <inttypes.h>
-#include <stdio.h>
-#include <stdlib.h>
-
 #include <algorithm>
+#include <cassert>
+#include <cerrno>
+#include <cinttypes>
+#include <cstdio>
+#include <cstdlib>
 
 #include "binary-reader.h"
 #include "binary-reader-opcnt.h"
@@ -285,7 +284,7 @@ static void display_sorted_int_pair_counter_vector(
                                   display_second_fcn, opcode_name);
 }
 
-int main(int argc, char** argv) {
+int ProgramMain(int argc, char** argv) {
   init_stdio();
   parse_options(argc, argv);
 
@@ -333,4 +332,10 @@ int main(int argc, char** argv) {
   }
   delete[] data;
   return result != Result::Ok;
+}
+
+int main(int argc, char** argv) {
+  WABT_TRY
+  return ProgramMain(argc, argv);
+  WABT_CATCH_BAD_ALLOC_AND_EXIT
 }

@@ -16,14 +16,13 @@
 
 #include "binary-reader.h"
 
-#include <assert.h>
-#include <inttypes.h>
-#include <setjmp.h>
-#include <stdarg.h>
-#include <stdint.h>
-#include <stdio.h>
-#include <string.h>
-
+#include <cassert>
+#include <cinttypes>
+#include <csetjmp>
+#include <cstdarg>
+#include <cstdint>
+#include <cstdio>
+#include <cstring>
 #include <vector>
 
 #include "binary.h"
@@ -956,6 +955,8 @@ static void read_names_section(Context* ctx, uint32_t section_size) {
         for (uint32_t j = 0; j < num_funcs; ++j) {
           uint32_t function_index;
           in_u32_leb128(ctx, &function_index, "function index");
+          RAISE_ERROR_UNLESS(function_index < num_total_funcs(ctx),
+                             "invalid function index: %u", function_index);
           uint32_t num_locals;
           in_u32_leb128(ctx, &num_locals, "local count");
           CALLBACK(OnLocalNameLocalCount, function_index, num_locals);
@@ -1008,9 +1009,9 @@ static void read_reloc_section(Context* ctx, uint32_t section_size) {
     in_u32_leb128(ctx, &index, "index");
     RelocType type = static_cast<RelocType>(reloc_type);
     switch (type) {
-      case RelocType::MemoryAddressLEB:
-      case RelocType::MemoryAddressSLEB:
-      case RelocType::MemoryAddressI32:
+      case RelocType::GlobalAddressLEB:
+      case RelocType::GlobalAddressSLEB:
+      case RelocType::GlobalAddressI32:
         in_i32_leb128(ctx, &addend, "addend");
         break;
       default:

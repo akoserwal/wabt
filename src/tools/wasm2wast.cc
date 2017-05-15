@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-#include <assert.h>
-#include <inttypes.h>
-#include <stdio.h>
-#include <stdlib.h>
+#include <cassert>
+#include <cinttypes>
+#include <cstdio>
+#include <cstdlib>
 
 #include "apply-names.h"
 #include "binary-error-handler.h"
@@ -131,7 +131,7 @@ static void parse_options(int argc, char** argv) {
   }
 }
 
-int main(int argc, char** argv) {
+int ProgramMain(int argc, char** argv) {
   Result result;
 
   init_stdio();
@@ -165,4 +165,10 @@ int main(int argc, char** argv) {
     delete[] data;
   }
   return result != Result::Ok;
+}
+
+int main(int argc, char** argv) {
+  WABT_TRY
+  return ProgramMain(argc, argv);
+  WABT_CATCH_BAD_ALLOC_AND_EXIT
 }
