@@ -260,10 +260,13 @@ bool WatWriter::WriteStringSliceOpt(const StringSlice* str,
 void WatWriter::WriteStringSliceOrIndex(const StringSlice* str,
                                         Index index,
                                         NextChar next_char) {
-  if (str->start)
+  if (str->start) {
+    WriteNextChar();
+    WritePutc('$');
     WriteStringSlice(str, next_char);
-  else
+  } else {
     Writef("(;%u;)", index);
+  }
 }
 
 void WatWriter::WriteQuotedData(const void* data, size_t length) {
@@ -618,8 +621,7 @@ void WatWriter::WriteFunc(const Module* module, const Func* func) {
 
 void WatWriter::WriteBeginGlobal(const Global* global) {
   WriteOpenSpace("global");
-  WriteStringSliceOrIndex(&global->name, global_index_++,
-                              NextChar::Space);
+  WriteStringSliceOrIndex(&global->name, global_index_++, NextChar::Space);
   if (global->mutable_) {
     WriteOpenSpace("mut");
     WriteType(global->type, NextChar::Space);
@@ -643,8 +645,7 @@ void WatWriter::WriteLimits(const Limits* limits) {
 
 void WatWriter::WriteTable(const Table* table) {
   WriteOpenSpace("table");
-  WriteStringSliceOrIndex(&table->name, table_index_++,
-                              NextChar::Space);
+  WriteStringSliceOrIndex(&table->name, table_index_++, NextChar::Space);
   WriteLimits(&table->elem_limits);
   WritePutsSpace("anyfunc");
   WriteCloseNewline();
@@ -660,8 +661,7 @@ void WatWriter::WriteElemSegment(const ElemSegment* segment) {
 
 void WatWriter::WriteMemory(const Memory* memory) {
   WriteOpenSpace("memory");
-  WriteStringSliceOrIndex(&memory->name, memory_index_++,
-                              NextChar::Space);
+  WriteStringSliceOrIndex(&memory->name, memory_index_++, NextChar::Space);
   WriteLimits(&memory->page_limits);
   WriteCloseNewline();
 }
@@ -681,7 +681,7 @@ void WatWriter::WriteImport(const Import* import) {
     case ExternalKind::Func:
       WriteOpenSpace("func");
       WriteStringSliceOrIndex(&import->func->name, func_index_++,
-                                  NextChar::Space);
+                              NextChar::Space);
       if (decl_has_func_type(&import->func->decl)) {
         WriteOpenSpace("type");
         WriteVar(&import->func->decl.type_var, NextChar::None);
